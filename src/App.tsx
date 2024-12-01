@@ -7,6 +7,7 @@ import QuestionList from './pages/QuestionList';
 import QuestionDetail from './pages/QuestionDetail';
 import HomePage from './components/HomePage';
 import AuthPage from './components/AuthPage';
+import Profile from './pages/Profile';
 import { checkLoginStatus, getUserDetails } from './utils/api';
 import { LOGOUTURL } from './utils/comstants';
 
@@ -91,6 +92,12 @@ export default function App() {
             <Route path="/questions" element={<QuestionList />} />
             <Route path="/questions/:id" element={<QuestionDetail />} />
             <Route path="/login" element={<AuthPage />} />
+            <Route 
+              path="/profile" 
+              element={
+                isLoggedIn ? <Profile /> : <Navigate to="/login" />
+              }
+            />
           </Routes>
         </main>
       </div>

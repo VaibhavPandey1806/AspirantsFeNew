@@ -1,19 +1,28 @@
 export interface Comment {
   id: string;
   text: string;
-  submittedBy: string;
+  submittedBy?: string;
   likes: number;
   dislikes: number;
-  likedBy: string[];
+  likedBy: string[] | null;
   dislikedBy: string[] | null;
   dateTimeSubmitted: string;
-  replies: string[] | null;
-}
-
-export interface CommentWithUser extends Comment {
+  replies?: Comment[];
   user?: {
     name: string;
     username: string;
   };
-  replyComments?: CommentWithUser[];
+}
+
+export interface CommentFormProps {
+  questionId: string;
+  onCommentAdded: () => void;
+}
+
+export interface CommentItemProps {
+  comment: Comment;
+  onReply: (commentId: string) => void;
+  onLike: (commentId: string) => void;
+  onUnlike: (commentId: string) => void;
+  onDislike: (commentId: string) => void;
 }

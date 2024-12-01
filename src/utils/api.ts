@@ -37,15 +37,23 @@ export const getSources = () => api.get<Source[]>('/api/sources');
 
 // Questions
 export const getQuestionsByFilters = (params: {
-  category?: string;
-  topic?: string;
-  source?: string;
+  category?: string[];
+  topic?: string[];
+  source?: string[];
 }) => {
   const queryParams = new URLSearchParams();
-  if (params.category) queryParams.append('category', params.category);
-  if (params.topic) queryParams.append('topic', params.topic);
-  if (params.source) queryParams.append('source', params.source);
-  
+
+  // Handle array parameters
+  if (params.category) {
+    params.category.forEach(cat => queryParams.append('category', cat));
+  }
+  if (params.topic) {
+    params.topic.forEach(topic => queryParams.append('topic', topic));
+  }
+  if (params.source) {
+    params.source.forEach(source => queryParams.append('source', source));
+  }
+
   return api.get<Question[]>(`/api/getQuestionsByFilters?${queryParams.toString()}`);
 };
 
@@ -53,15 +61,15 @@ export const getQuestionById = (id: string) =>
   api.get<Question>(`/api/getQuestionsbyId?id=${id}`);
 
 export const submitQuestion = (questionData: {
-  question: string;
+  questionText: string;
   optionA: string;
   optionB: string;
   optionC: string;
   optionD: string;
-  topic: string;
-  source: string;
-  category: string;
-  correctAnswer: string;
+  topicId: string;
+  sourceId: string;
+  sectionId: string;
+  correctAnswer: 'A' | 'B' | 'C' | 'D';
 }) => api.post<Question>('/api/questions', questionData);
 
 // Responses
@@ -73,7 +81,10 @@ export const submitResponse = (params: {
 }) => api.get<string>('/api/addResponse', { params });
 
 // Comments
-export const getCommentById = (id: string) => 
+export const addComment = (questionId: string, text: string) =>
+  api.post<Comment>('/api/addComment', null, { params: { questionId, text } });
+
+export const getCommentById = (id: string) =>
   api.get<Comment>(`/api/getCommentsbyId?id=${id}`);
 
 export const addReply = (commentId: string, text: string) =>

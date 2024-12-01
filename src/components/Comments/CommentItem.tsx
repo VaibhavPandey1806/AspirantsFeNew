@@ -1,16 +1,6 @@
-import React, { useState } from 'react';
-import { CommentWithUser } from '../../types/comment';
-import CommentActions from './CommentActions';
-import CommentForm from './CommentForm';
-
-interface CommentItemProps {
-  comment: CommentWithUser;
-  onReply: (commentId: string, text: string) => void;
-  onLike: (commentId: string) => void;
-  onUnlike: (commentId: string) => void;
-  onDislike: (commentId: string) => void;
-  currentUserLiked: boolean;
-}
+import React from 'react';
+import { ThumbsUp, ThumbsDown, MessageCircle } from 'lucide-react';
+import { CommentItemProps } from '../../types/comment';
 
 export default function CommentItem({
   comment,
@@ -18,66 +8,50 @@ export default function CommentItem({
   onLike,
   onUnlike,
   onDislike,
-  currentUserLiked
-}: CommentItemProps) {
-  const [showReplyForm, setShowReplyForm] = useState(false);
-
-  const handleReply = (text: string) => {
-    onReply(comment.id, text);
-    setShowReplyForm(false);
-  };
-
+  isNested = false
+}: CommentItemProps & { isNested?: boolean }) {
   return (
-    <div className="space-y-4">
-      <div className="bg-white rounded-lg p-4">
-        <div className="flex items-start gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-medium">{comment.user?.name || 'Unknown User'}</span>
-              <span className="text-sm text-gray-500">•</span>
-              <span className="text-sm text-gray-500">{comment.dateTimeSubmitted}</span>
-            </div>
-            <p className="text-gray-700">{comment.text}</p>
+    <div className={`bg-white rounded-lg p-4 ${!isNested ? 'shadow-sm' : ''}`}>
+      <div className="flex items-start gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-medium">{comment.user?.name || 'Anonymous'}</span>
+            <span className="text-sm text-gray-500">•</span>
+            <span className="text-sm text-gray-500">{comment.dateTimeSubmitted}</span>
+          </div>
+          <p className="text-gray-700">{comment.text}</p>
+          
+          <div className="flex items-center gap-4 mt-2">
+            <button
+              onClick={() => comment.likedBy?.includes(comment.submittedBy || '') ? onUnlike(comment.id) : onLike(comment.id)}
+              className={`flex items-center gap-1 text-sm ${
+                comment.likedBy?.includes(comment.submittedBy || '') 
+                  ? 'text-indigo-600' 
+                  : 'text-gray-500 hover:text-indigo-600'
+              }`}
+            >
+              <ThumbsUp size={16} />
+              <span>{comment.likes}</span>
+            </button>
             
-            <CommentActions
-              likes={comment.likes}
-              dislikes={comment.dislikes}
-              hasLiked={currentUserLiked}
-              onLike={() => onLike(comment.id)}
-              onUnlike={() => onUnlike(comment.id)}
-              onDislike={() => onDislike(comment.id)}
-              onReply={() => setShowReplyForm(true)}
-            />
+            <button
+              onClick={() => onDislike(comment.id)}
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-600"
+            >
+              <ThumbsDown size={16} />
+              <span>{comment.dislikes}</span>
+            </button>
             
-            {showReplyForm && (
-              <div className="mt-4">
-                <CommentForm
-                  onSubmit={handleReply}
-                  placeholder="Write a reply..."
-                  buttonText="Reply"
-                />
-              </div>
-            )}
+            <button
+              onClick={() => onReply(comment.id)}
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-indigo-600"
+            >
+              <MessageCircle size={16} />
+              <span>Reply</span>
+            </button>
           </div>
         </div>
       </div>
-
-      {/* Replies */}
-      {comment.replyComments && comment.replyComments.length > 0 && (
-        <div className="ml-8 space-y-4">
-          {comment.replyComments.map((reply) => (
-            <CommentItem
-              key={reply.id}
-              comment={reply}
-              onReply={onReply}
-              onLike={onLike}
-              onUnlike={onUnlike}
-              onDislike={onDislike}
-              currentUserLiked={reply.likedBy?.includes(reply.submittedBy) || false}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 }

@@ -18,19 +18,21 @@ export default function QuestionListPage() {
       setError(null);
 
       try {
-        const category = searchParams.get('category');
-        const topic = searchParams.get('topic');
-        const source = searchParams.get('source');
+        const categoryParam = searchParams.get('category');
+        const topicParam = searchParams.get('topic');
+        const sourceParam = searchParams.get('source');
 
-        if (!category) {
+        if (!categoryParam) {
           throw new Error('Category is required');
         }
 
-        const { data } = await getQuestionsByFilters({
-          category,
-          topic,
-          source
-        });
+        const filters = {
+          category: categoryParam.split(','),
+          topic: topicParam ? topicParam.split(',') : undefined,
+          source: sourceParam ? sourceParam.split(',') : undefined
+        };
+
+        const { data } = await getQuestionsByFilters(filters);
         setQuestions(data);
       } catch (err) {
         console.error('Error fetching questions:', err);
