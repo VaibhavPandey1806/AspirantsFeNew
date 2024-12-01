@@ -8,6 +8,7 @@ import QuestionDetail from './pages/QuestionDetail';
 import HomePage from './components/HomePage';
 import AuthPage from './components/AuthPage';
 import { checkLoginStatus, getUserDetails } from './utils/api';
+import { LOGOUTURL } from './utils/comstants';
 
 interface UserData {
   name: string;
@@ -57,7 +58,7 @@ export default function App() {
   }, []);
 
   const handleLogout = () => {
-    window.location.href = 'http://localhost:8086/logout';
+    window.location.href = LOGOUTURL;
   };
 
   if (isLoading) {
