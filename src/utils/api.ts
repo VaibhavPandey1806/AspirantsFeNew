@@ -4,7 +4,7 @@ import { User } from '../types/user';
 import { Comment } from '../types/comment';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8086',
+  baseURL: 'aspirantsclub-production.up.railway.app',
   withCredentials: true,
 });
 
