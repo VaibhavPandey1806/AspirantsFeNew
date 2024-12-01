@@ -45,10 +45,11 @@ export default function QuestionTimer({
   return (
     <div className="flex items-center space-x-4 bg-white rounded-lg shadow-sm px-4 py-2">
       <TimerIcon size={20} className="text-gray-500" />
-      <span className="font-mono text-lg">{formatTime(time)}</span>
+      <span className="font-mono text-lg min-w-[4rem]">{formatTime(time)}</span>
       <button
         onClick={isActive ? onPause : onStart}
-        className="p-2 rounded-full hover:bg-gray-100"
+        className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+        title={isActive ? 'Pause timer' : 'Start timer'}
       >
         {isActive ? (
           <Pause size={20} className="text-red-500" />

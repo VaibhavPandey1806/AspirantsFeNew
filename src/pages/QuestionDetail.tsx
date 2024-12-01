@@ -1,17 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getQuestionById } from '../utils/api';
+import { getQuestionById, getUserDetails } from '../utils/api';
 import { Question } from '../types/question';
 import { Comment } from '../types/comment';
 import CommentSection from '../components/Comments/CommentSection';
 import { useComments } from '../hooks/useComments';
+import { useQuestionTimer } from '../hooks/useQuestionTimer';
+import QuestionHeader from '../components/Question/QuestionHeader';
+import QuestionOptions from '../components/Question/QuestionOptions';
+import QuestionMeta from '../components/Question/QuestionMeta';
 
 export default function QuestionDetail() {
   const { id } = useParams<{ id: string }>();
   const [question, setQuestion] = useState<Question | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userId, setUserId] = useState<string>('');
   const { fetchComments } = useComments(() => fetchQuestionAndComments());
+  
+  const {
+    time,
+    isActive,
+    selectedAnswer,
+    showResult,
+    startTimer,
+    pauseTimer,
+    handleAnswerSelect
+  } = useQuestionTimer(id || '', userId);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const { data: user } = await getUserDetails();
+        setUserId(user.id);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const fetchQuestionAndComments = async () => {
     if (!id) return;
@@ -21,16 +49,15 @@ export default function QuestionDetail() {
       const { data: questionData } = await getQuestionById(id);
       setQuestion(questionData);
 
-      // Only fetch comments if the question has comments array and it's not empty
       if (questionData.comments && Array.isArray(questionData.comments) && questionData.comments.length > 0) {
         const fetchedComments = await fetchComments(questionData.comments);
-        setComments(fetchedComments.filter(Boolean)); // Filter out any null/undefined comments
+        setComments(fetchedComments.filter(Boolean));
       } else {
-        setComments([]); // Reset comments if there are none
+        setComments([]);
       }
     } catch (error) {
       console.error('Error fetching question:', error);
-      setComments([]); // Reset comments on error
+      setComments([]);
     } finally {
       setIsLoading(false);
     }
@@ -61,33 +88,35 @@ export default function QuestionDetail() {
       <div className="space-y-8">
         {/* Question Content */}
         <div className="bg-white rounded-lg shadow-sm p-8">
+          <QuestionHeader
+            onTimerStart={startTimer}
+            onTimerPause={pauseTimer}
+            onTimerTick={(seconds) => {}}
+            isTimerActive={isActive}
+          />
+
           <h1 className="text-xl font-medium text-gray-900 mb-8">
             {question.questionText}
           </h1>
           
-          <div className="grid grid-cols-2 gap-4">
-            {['A', 'B', 'C', 'D'].map((option) => (
-              <div key={option} className="p-4 bg-gray-50 rounded-lg">
-                <span className="font-medium">Option {option}:</span>
-                <span className="ml-2">
-                  {question[`option${option}` as keyof Question]}
-                </span>
-              </div>
-            ))}
-          </div>
+          <QuestionOptions
+            options={{
+              'A': question.optionA,
+              'B': question.optionB,
+              'C': question.optionC,
+              'D': question.optionD
+            }}
+            selectedAnswer={selectedAnswer}
+            correctAnswer={question.correctAnswer}
+            showResult={showResult}
+            isTimerActive={isActive}
+            onSelectAnswer={(answer) => handleAnswerSelect(answer, question.correctAnswer || '')}
+          />
 
-          <div className="mt-6 flex gap-2">
-            {question.topic && (
-              <span className="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm">
-                {question.topic}
-              </span>
-            )}
-            {question.source && (
-              <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm">
-                {question.source}
-              </span>
-            )}
-          </div>
+          <QuestionMeta
+            topic={question.topic}
+            source={question.source}
+          />
         </div>
 
         {/* Comments Section */}
