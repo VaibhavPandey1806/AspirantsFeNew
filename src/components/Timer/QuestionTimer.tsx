@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Play, Pause, Timer as TimerIcon } from 'lucide-react';
 
 interface QuestionTimerProps {
@@ -6,36 +6,16 @@ interface QuestionTimerProps {
   onPause: () => void;
   onTick: (seconds: number) => void;
   isActive: boolean;
+  time: number;
 }
 
 export default function QuestionTimer({ 
   onStart, 
   onPause, 
   onTick,
-  isActive 
+  isActive,
+  time
 }: QuestionTimerProps) {
-  const [time, setTime] = useState(0);
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-
-    if (isActive) {
-      interval = setInterval(() => {
-        setTime((prevTime) => {
-          const newTime = prevTime + 1;
-          onTick(newTime);
-          return newTime;
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (interval) {
-        clearInterval(interval);
-      }
-    };
-  }, [isActive, onTick]);
-
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;

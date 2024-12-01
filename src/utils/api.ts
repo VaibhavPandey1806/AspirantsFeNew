@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Question, Category, Topic, Source } from '../types/question';
 import { User } from '../types/user';
 import { Comment } from '../types/comment';
+import { UserResponses } from '../types/response';
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
 
 const api = axios.create({
@@ -37,23 +38,22 @@ export const getSources = () => api.get<Source[]>('/api/sources');
 
 // Questions
 export const getQuestionsByFilters = (params: {
-  category?: string[];
+  category: string[];
   topic?: string[];
   source?: string[];
 }) => {
   const queryParams = new URLSearchParams();
-
-  // Handle array parameters
+  
   if (params.category) {
-    params.category.forEach(cat => queryParams.append('category', cat));
+    queryParams.append('category', params.category.join(','));
   }
   if (params.topic) {
-    params.topic.forEach(topic => queryParams.append('topic', topic));
+    queryParams.append('topic', params.topic.join(','));
   }
   if (params.source) {
-    params.source.forEach(source => queryParams.append('source', source));
+    queryParams.append('source', params.source.join(','));
   }
-
+  
   return api.get<Question[]>(`/api/getQuestionsByFilters?${queryParams.toString()}`);
 };
 
@@ -61,15 +61,15 @@ export const getQuestionById = (id: string) =>
   api.get<Question>(`/api/getQuestionsbyId?id=${id}`);
 
 export const submitQuestion = (questionData: {
-  questionText: string;
+  question: string;
   optionA: string;
   optionB: string;
   optionC: string;
   optionD: string;
-  topicId: string;
-  sourceId: string;
-  sectionId: string;
-  correctAnswer: 'A' | 'B' | 'C' | 'D';
+  topic: string;
+  source: string;
+  category: string;
+  correctAnswer: string;
 }) => api.post<Question>('/api/questions', questionData);
 
 // Responses
@@ -79,6 +79,8 @@ export const submitResponse = (params: {
   questionId: string;
   response: boolean;
 }) => api.get<string>('/api/addResponse', { params });
+
+export const getUserResponses = () => api.get<UserResponses>('/api/getResponses');
 
 // Comments
 export const addComment = (questionId: string, text: string) =>
@@ -101,3 +103,7 @@ export const dislikeComment = (id: string) =>
 
 export const hasLiked = (id: string) =>
   api.get<boolean>('/api/hasLiked', { params: { id } });
+
+// AI Opinion
+export const getAIOpinion = (id: string) =>
+  api.get<string>(`/api/AiResponseQuestionsbyId?id=${id}`);

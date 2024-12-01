@@ -8,6 +8,7 @@ import QuestionDetail from './pages/QuestionDetail';
 import HomePage from './components/HomePage';
 import AuthPage from './components/AuthPage';
 import Profile from './pages/Profile';
+import UserResponses from './pages/UserResponses';
 import { checkLoginStatus, getUserDetails } from './utils/api';
 import { LOGOUTURL } from './utils/comstants';
 
@@ -96,6 +97,12 @@ export default function App() {
               path="/profile" 
               element={
                 isLoggedIn ? <Profile /> : <Navigate to="/login" />
+              }
+            />
+            <Route 
+              path="/responses" 
+              element={
+                isLoggedIn ? <UserResponses /> : <Navigate to="/login" />
               }
             />
           </Routes>

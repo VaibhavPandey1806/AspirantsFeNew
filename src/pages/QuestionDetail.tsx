@@ -9,6 +9,7 @@ import { useQuestionTimer } from '../hooks/useQuestionTimer';
 import QuestionHeader from '../components/Question/QuestionHeader';
 import QuestionOptions from '../components/Question/QuestionOptions';
 import QuestionMeta from '../components/Question/QuestionMeta';
+import AIOpinion from '../components/Question/AIOpinion';
 
 export default function QuestionDetail() {
   const { id } = useParams<{ id: string }>();
@@ -91,8 +92,9 @@ export default function QuestionDetail() {
           <QuestionHeader
             onTimerStart={startTimer}
             onTimerPause={pauseTimer}
-            onTimerTick={(seconds) => {}}
+            onTimerTick={() => {}}
             isTimerActive={isActive}
+            time={time}
           />
 
           <h1 className="text-xl font-medium text-gray-900 mb-8">
@@ -111,6 +113,12 @@ export default function QuestionDetail() {
             showResult={showResult}
             isTimerActive={isActive}
             onSelectAnswer={(answer) => handleAnswerSelect(answer, question.correctAnswer || '')}
+          />
+
+          <AIOpinion 
+            questionId={question.id} 
+            isTimerActive={isActive}
+            showResult={showResult}
           />
 
           <QuestionMeta

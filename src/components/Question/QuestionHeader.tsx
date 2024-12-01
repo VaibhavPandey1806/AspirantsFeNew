@@ -8,13 +8,15 @@ interface QuestionHeaderProps {
   onTimerPause: () => void;
   onTimerTick: (seconds: number) => void;
   isTimerActive: boolean;
+  time: number;
 }
 
 export default function QuestionHeader({ 
   onTimerStart, 
   onTimerPause, 
   onTimerTick,
-  isTimerActive 
+  isTimerActive,
+  time
 }: QuestionHeaderProps) {
   const navigate = useNavigate();
 
@@ -32,6 +34,7 @@ export default function QuestionHeader({
         onPause={onTimerPause}
         onTick={onTimerTick}
         isActive={isTimerActive}
+        time={time}
       />
     </div>
   );

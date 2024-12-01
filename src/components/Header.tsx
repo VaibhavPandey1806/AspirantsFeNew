@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, ChevronDown, LogOut, User as UserIcon } from 'lucide-react';
+import { Menu, X, ChevronDown, LogOut, User as UserIcon, ClipboardList } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { API_BASE_URL } from '../config/api';
 
@@ -53,6 +53,13 @@ export default function Header({ isLoggedIn, userName, onLogout }: HeaderProps) 
                       <UserIcon size={16} className="mr-2" />
                       Profile
                     </Link>
+                    <Link
+                      to="/responses"
+                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-indigo-50"
+                    >
+                      <ClipboardList size={16} className="mr-2" />
+                      My Responses
+                    </Link>
                     <button
                       onClick={onLogout}
                       className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-indigo-50"
@@ -105,6 +112,12 @@ export default function Header({ isLoggedIn, userName, onLogout }: HeaderProps) 
                   className="block text-gray-600 hover:text-indigo-600"
                 >
                   Profile
+                </Link>
+                <Link
+                  to="/responses"
+                  className="block text-gray-600 hover:text-indigo-600"
+                >
+                  My Responses
                 </Link>
                 <button
                   onClick={onLogout}
