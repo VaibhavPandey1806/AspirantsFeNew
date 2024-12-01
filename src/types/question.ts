@@ -9,6 +9,9 @@ export interface Topic extends BaseItem {
 export interface Source extends BaseItem {}
 
 export interface Question {
+  submittedBy: any;
+  dateTimeSubmitted: string | undefined;
+  comments: string[] | null;
   id: string;
   questionText: string;
   optionA: string;
