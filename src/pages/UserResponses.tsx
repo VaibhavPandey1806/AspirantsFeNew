@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { getUserResponses } from '../utils/api';
 import type { UserResponses as UserResponsesType } from '../types/response';
-import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Filter } from 'lucide-react';
+import { useResponseFilters } from '../hooks/useResponseFilters';
+import FilterSelect from '../components/Filters/FilterSelect';
 
 export default function UserResponsesPage() {
   const [responses, setResponses] = useState<UserResponsesType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     const fetchResponses = async () => {
@@ -21,6 +24,19 @@ export default function UserResponsesPage() {
 
     fetchResponses();
   }, []);
+
+  const {
+    categories,
+    topics,
+    sources,
+    selectedCategory,
+    selectedTopic,
+    selectedSource,
+    setSelectedCategory,
+    setSelectedTopic,
+    setSelectedSource,
+    filteredResponses
+  } = useResponseFilters(responses?.responses || []);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -44,15 +60,55 @@ export default function UserResponsesPage() {
     );
   }
 
-  const totalQuestions = responses.responses.length;
-  const correctAnswers = responses.responses.filter(r => r.response).length;
+  const totalQuestions = filteredResponses.length;
+  const correctAnswers = filteredResponses.filter(r => r.response).length;
   const averageTime = totalQuestions > 0 
-    ? responses.responses.reduce((acc, r) => acc + r.time, 0) / totalQuestions 
+    ? filteredResponses.reduce((acc, r) => acc + r.time, 0) / totalQuestions 
     : 0;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">My Responses</h1>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">My Responses</h1>
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900"
+        >
+          <Filter size={20} />
+          <span>{showFilters ? 'Hide Filters' : 'Show Filters'}</span>
+        </button>
+      </div>
+
+      {/* Filters */}
+      {showFilters && (
+        <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <FilterSelect
+              label="Category"
+              value={selectedCategory}
+              onChange={(value) => {
+                setSelectedCategory(value);
+                setSelectedTopic('');
+              }}
+              options={categories}
+            />
+            <FilterSelect
+              label="Topic"
+              value={selectedTopic}
+              onChange={setSelectedTopic}
+              options={topics}
+              disabled={!selectedCategory}
+              placeholder={selectedCategory ? 'All Topics' : 'Select a Category first'}
+            />
+            <FilterSelect
+              label="Source"
+              value={selectedSource}
+              onChange={setSelectedSource}
+              options={sources}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -119,7 +175,7 @@ export default function UserResponsesPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {responses.responses.map((response, index) => (
+              {filteredResponses.map((response, index) => (
                 <tr key={response.id || index} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-normal">
                     <div className="text-sm text-gray-900 max-w-xl">

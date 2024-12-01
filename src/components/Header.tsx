@@ -18,7 +18,7 @@ export default function Header({ isLoggedIn, userName, onLogout }: HeaderProps) 
   };
 
   return (
-    <header className="bg-white shadow-md">
+    <header className="bg-white shadow-md relative z-50">
       <nav className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-indigo-600">
@@ -45,7 +45,7 @@ export default function Header({ isLoggedIn, userName, onLogout }: HeaderProps) 
                 </button>
                 
                 {showDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 border border-gray-100">
                     <Link
                       to="/profile"
                       className="flex items-center px-4 py-2 text-gray-700 hover:bg-indigo-50"
@@ -91,7 +91,7 @@ export default function Header({ isLoggedIn, userName, onLogout }: HeaderProps) 
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden mt-4 space-y-4">
+          <div className="md:hidden mt-4 space-y-4 bg-white">
             <Link
               to="/submit-question"
               className="block text-gray-600 hover:text-indigo-600"
