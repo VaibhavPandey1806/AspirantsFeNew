@@ -2,9 +2,11 @@ import axios from 'axios';
 import { Question, Category, Topic, Source } from '../types/question';
 import { User } from '../types/user';
 import { Comment } from '../types/comment';
+import { API_BASE_URL, API_TIMEOUT } from '../config/api';
 
 const api = axios.create({
-  baseURL: 'aspirantsclub-production.up.railway.app',
+  baseURL: API_BASE_URL,
+  timeout: API_TIMEOUT,
   withCredentials: true,
 });
 

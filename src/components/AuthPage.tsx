@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../utils/api';
-import { LOGINURL } from '../utils/comstants';
+import { API_BASE_URL } from '../config/api';
 
 export default function AuthPage() {
   const [formData, setFormData] = useState({
@@ -19,7 +19,7 @@ export default function AuthPage() {
     try {
       await registerUser(formData);
       // After successful registration, redirect to backend login
-      window.location.href = LOGINURL;
+      window.location.href = `${API_BASE_URL}/login`;
     } catch (error) {
       console.error('Registration error:', error);
     }
@@ -31,9 +31,8 @@ export default function AuthPage() {
   };
 
   const redirectToLogin = () => {
-    window.location.href = LOGINURL;
+    window.location.href = `${API_BASE_URL}/login`;
   };
-
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

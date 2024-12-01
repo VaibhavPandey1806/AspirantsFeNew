@@ -1,5 +1,5 @@
 export interface BaseItem {
-    id: string;
-    name: string;
-    details?: string;
-  }
+  id: string;
+  name: string;
+  details?: string;
+}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Menu, X, ChevronDown, LogOut, User as UserIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { LOGINURL } from '../utils/comstants';
+import { API_BASE_URL } from '../config/api';
 
 interface HeaderProps {
   isLoggedIn: boolean;
@@ -14,7 +14,7 @@ export default function Header({ isLoggedIn, userName, onLogout }: HeaderProps) 
   const [showDropdown, setShowDropdown] = useState(false);
 
   const handleLoginClick = () => {
-    window.location.href = LOGINURL;
+    window.location.href = `${API_BASE_URL}/login`;
   };
 
   return (
