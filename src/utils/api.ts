@@ -12,16 +12,16 @@ const api = axios.create({
 });
 
 // Auth
-export const checkLoginStatus = () => api.get<boolean>('/public/isLogin');
-export const getUserDetails = () => api.get<User>('/api/userDetails');
+export const checkLoginStatus = () => api.get('/public/isLogin');
+export const getUserDetails = () => api.get('/api/userDetails');
 export const getUserById = (id: string) => api.get<User>(`/api/getUserDetails?id=${id}`);
 export const registerUser = (userData: {
-  name: string;
   username: string;
   password: string;
+  name: string;
   mobile: string;
   email: string;
-}) => api.get<User>('/api/addUserfromWeb', { params: userData });
+}) => api.post('/public/addUser', userData);
 
 // Categories
 export const getCategories = () => api.get<Category[]>('/api/categories');

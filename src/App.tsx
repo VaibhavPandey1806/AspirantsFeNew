@@ -7,10 +7,10 @@ import QuestionList from './pages/QuestionList';
 import QuestionDetail from './pages/QuestionDetail';
 import HomePage from './components/HomePage';
 import AuthPage from './components/AuthPage';
+import RegisterPage from './components/RegisterPage';
 import Profile from './pages/Profile';
 import UserResponses from './pages/UserResponses';
 import { checkLoginStatus, getUserDetails } from './utils/api';
-import { LOGOUTURL } from './utils/comstants';
 
 interface UserData {
   name: string;
@@ -60,7 +60,7 @@ export default function App() {
   }, []);
 
   const handleLogout = () => {
-    window.location.href = LOGOUTURL;
+    window.location.href = 'http://localhost:8086/logout';
   };
 
   if (isLoading) {
@@ -93,6 +93,7 @@ export default function App() {
             <Route path="/questions" element={<QuestionList />} />
             <Route path="/questions/:id" element={<QuestionDetail />} />
             <Route path="/login" element={<AuthPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             <Route 
               path="/profile" 
               element={

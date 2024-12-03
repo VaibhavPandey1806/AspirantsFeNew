@@ -1,18 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../utils/api';
-import { API_BASE_URL } from '../config/api';
 
-interface FormData {
-  name: string;
-  username: string;
-  password: string;
-  mobile: string;
-  email: string;
-}
-
-export default function AuthPage() {
-  const [formData, setFormData] = useState<FormData>({
+export default function RegisterPage() {
+  const [formData, setFormData] = useState({
     name: '',
     username: '',
     password: '',
@@ -30,8 +21,8 @@ export default function AuthPage() {
     
     try {
       await registerUser(formData);
-      // After successful registration, redirect to backend login
-      window.location.href = `${API_BASE_URL}/login`;
+      // After successful registration, redirect to login
+      window.location.href = 'http://localhost:8086/login';
     } catch (error: any) {
       setError(error.response?.data || 'Registration failed. Please try again.');
     } finally {
@@ -45,7 +36,7 @@ export default function AuthPage() {
   };
 
   const redirectToLogin = () => {
-    window.location.href = `${API_BASE_URL}/login`;
+    window.location.href = 'http://localhost:8086/login';
   };
 
   return (

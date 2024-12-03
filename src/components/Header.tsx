@@ -13,8 +13,12 @@ export default function Header({ isLoggedIn, userName, onLogout }: HeaderProps) 
   const [isOpen, setIsOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const handleLoginClick = () => {
-    window.location.href = `${API_BASE_URL}/login`;
+  const handleAuthClick = () => {
+    if (isLoggedIn) {
+      onLogout();
+    } else {
+      window.location.href = '/register';
+    }
   };
 
   return (
@@ -72,10 +76,10 @@ export default function Header({ isLoggedIn, userName, onLogout }: HeaderProps) 
               </div>
             ) : (
               <button
-                onClick={handleLoginClick}
+                onClick={handleAuthClick}
                 className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
               >
-                Login
+                Login / Register
               </button>
             )}
           </div>
@@ -128,10 +132,10 @@ export default function Header({ isLoggedIn, userName, onLogout }: HeaderProps) 
               </>
             ) : (
               <button
-                onClick={handleLoginClick}
+                onClick={handleAuthClick}
                 className="block w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 text-center"
               >
-                Login
+                Login / Register
               </button>
             )}
           </div>
