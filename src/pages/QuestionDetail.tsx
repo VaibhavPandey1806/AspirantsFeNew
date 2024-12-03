@@ -50,7 +50,7 @@ export default function QuestionDetail() {
       const { data: questionData } = await getQuestionById(id);
       setQuestion(questionData);
 
-      if (questionData.comments && Array.isArray(questionData.comments) && questionData.comments.length > 0) {
+      if (questionData.comments && Array.isArray(questionData.comments)) {
         const fetchedComments = await fetchComments(questionData.comments);
         setComments(fetchedComments.filter(Boolean));
       } else {
@@ -67,6 +67,10 @@ export default function QuestionDetail() {
   useEffect(() => {
     fetchQuestionAndComments();
   }, [id]);
+
+  const handleTimerTick = (seconds: number) => {
+    // Optional: Add any additional timer tick handling logic here
+  };
 
   if (isLoading) {
     return (
@@ -87,12 +91,11 @@ export default function QuestionDetail() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="space-y-8">
-        {/* Question Content */}
         <div className="bg-white rounded-lg shadow-sm p-8">
           <QuestionHeader
             onTimerStart={startTimer}
             onTimerPause={pauseTimer}
-            onTimerTick={() => {}}
+            onTimerTick={handleTimerTick}
             isTimerActive={isActive}
             time={time}
           />
@@ -127,7 +130,6 @@ export default function QuestionDetail() {
           />
         </div>
 
-        {/* Comments Section */}
         <div className="bg-white rounded-lg shadow-sm p-8">
           <CommentSection
             questionId={question.id}

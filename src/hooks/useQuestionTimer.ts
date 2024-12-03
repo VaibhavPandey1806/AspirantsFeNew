@@ -8,19 +8,37 @@ export function useQuestionTimer(questionId: string, userId?: string) {
   const [showResult, setShowResult] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Reset timer when question changes
   useEffect(() => {
-    return () => {
-      setIsActive(false);
-      setTime(0);
-      setSelectedAnswer('');
-      setShowResult(false);
-    };
+    setIsActive(false);
+    setTime(0);
+    setSelectedAnswer('');
+    setShowResult(false);
+    setIsSubmitting(false);
   }, [questionId]);
+
+  // Timer interval
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+    
+    if (isActive && !showResult) {
+      intervalId = setInterval(() => {
+        setTime((prevTime) => prevTime + 1);
+      }, 1000);
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isActive, showResult]);
 
   const startTimer = useCallback(() => {
     setIsActive(true);
     setShowResult(false);
     setSelectedAnswer('');
+    setTime(0);
   }, []);
 
   const pauseTimer = useCallback(() => {
@@ -32,6 +50,7 @@ export function useQuestionTimer(questionId: string, userId?: string) {
     setIsActive(false);
     setSelectedAnswer('');
     setShowResult(false);
+    setIsSubmitting(false);
   }, []);
 
   const submitAnswer = useCallback(async (isCorrect: boolean) => {
@@ -45,14 +64,18 @@ export function useQuestionTimer(questionId: string, userId?: string) {
         timer: time,
         response: isCorrect
       });
+      
+      // Stop timer and show result immediately after submission
+      setIsActive(false);
       setShowResult(true);
-      pauseTimer();
+      
+      // Don't reset time here to show the final time to the user
     } catch (error) {
       console.error('Error submitting response:', error);
     } finally {
       setIsSubmitting(false);
     }
-  }, [userId, questionId, time, isSubmitting, pauseTimer]);
+  }, [userId, questionId, time, isSubmitting]);
 
   const handleAnswerSelect = useCallback((answer: string, correctAnswer: string) => {
     if (showResult || !isActive) return;

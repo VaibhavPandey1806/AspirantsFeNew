@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Play, Pause, Timer as TimerIcon } from 'lucide-react';
 
 interface QuestionTimerProps {
@@ -21,6 +21,12 @@ export default function QuestionTimer({
     const remainingSeconds = seconds % 60;
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
+
+  useEffect(() => {
+    if (isActive) {
+      onTick(time);
+    }
+  }, [time, isActive, onTick]);
 
   return (
     <div className="flex items-center space-x-4 bg-white rounded-lg shadow-sm px-4 py-2">

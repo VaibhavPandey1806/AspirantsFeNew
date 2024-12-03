@@ -33,6 +33,7 @@ export default function QuestionOptions({
       {Object.entries(options).map(([key, value]) => {
         const isCorrect = showResult && correctAnswer === key;
         const isWrong = showResult && selectedAnswer === key && !isCorrect;
+        const isSelected = selectedAnswer === key;
 
         return (
           <button
@@ -42,7 +43,7 @@ export default function QuestionOptions({
             className={`w-full text-left p-4 rounded-lg border transition-all duration-200
               ${showResult && isCorrect ? 'bg-green-50 border-green-200' : ''}
               ${showResult && isWrong ? 'bg-red-50 border-red-200' : ''}
-              ${!showResult && selectedAnswer === key ? 'border-indigo-300 bg-indigo-50' : 'border-gray-200'}
+              ${!showResult && isSelected ? 'border-indigo-300 bg-indigo-50' : 'border-gray-200'}
               ${!showResult && isTimerActive ? 'hover:border-indigo-300 hover:bg-indigo-50 hover:shadow-sm' : ''}
               ${!isTimerActive && !showResult ? 'opacity-50 cursor-not-allowed' : ''}
             `}
