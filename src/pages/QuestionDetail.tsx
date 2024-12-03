@@ -127,6 +127,8 @@ export default function QuestionDetail() {
           <QuestionMeta
             topic={question.topic}
             source={question.source}
+            submittedBy={question.submittedBy}
+            dateSubmitted={question.dateTimeSubmitted}
           />
         </div>
 
