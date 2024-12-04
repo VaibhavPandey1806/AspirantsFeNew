@@ -20,7 +20,7 @@ export const registerUser = (userData: {
   password: string;
   name: string;
   mobile: string;
-  email: string;
+  emailId: string;
 }) => api.post('/public/addUser', userData);
 
 // Categories

@@ -9,7 +9,7 @@ export default function RegisterPage() {
     username: '',
     password: '',
     mobile: '',
-    email: ''
+    emailId: '' // Changed from email to emailId
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,10 +34,6 @@ export default function RegisterPage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const redirectToLogin = () => {
-    window.location.href = LOGINURL;
   };
 
   return (
@@ -119,8 +115,8 @@ export default function RegisterPage() {
               </label>
               <input
                 type="email"
-                name="email"
-                value={formData.email}
+                name="emailId"
+                value={formData.emailId}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 required
@@ -138,7 +134,7 @@ export default function RegisterPage() {
 
           <div className="mt-6">
             <button
-              onClick={redirectToLogin}
+              onClick={() => window.location.href = LOGINURL}
               className="w-full text-center text-sm text-indigo-600 hover:text-indigo-500"
             >
               Already have an account? Sign in

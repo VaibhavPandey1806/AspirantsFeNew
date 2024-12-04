@@ -8,7 +8,7 @@ interface FormData {
   username: string;
   password: string;
   mobile: string;
-  email: string;
+  emailId: string;
 }
 
 export default function AuthPage() {
@@ -17,7 +17,7 @@ export default function AuthPage() {
     username: '',
     password: '',
     mobile: '',
-    email: ''
+    emailId: ''
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -127,8 +127,8 @@ export default function AuthPage() {
               </label>
               <input
                 type="email"
-                name="email"
-                value={formData.email}
+                name="emailId"
+                value={formData.emailId}
                 onChange={handleInputChange}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 required

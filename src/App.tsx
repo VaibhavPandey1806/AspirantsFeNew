@@ -62,7 +62,7 @@ export default function App() {
   }, []);
 
   const handleLogout = () => {
-    window.location.href = LOGOUT_URL;
+    window.location.href = LOGOUTURL;
   };
 
   if (isLoading) {
