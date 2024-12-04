@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Menu, X, ChevronDown, LogOut, User as UserIcon, ClipboardList } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { API_BASE_URL } from '../config/api';
+import { LOGOUTURL } from '../utils/comstants';
 
 interface HeaderProps {
   isLoggedIn: boolean;
@@ -36,6 +36,9 @@ export default function Header({ isLoggedIn, userName, onLogout }: HeaderProps) 
             </Link>
             <Link to="/question-bank" className="text-gray-600 hover:text-indigo-600">
               Question Bank
+            </Link>
+            <Link to="/about" className="text-gray-600 hover:text-indigo-600">
+              About Us
             </Link>
             
             {isLoggedIn ? (
@@ -107,6 +110,12 @@ export default function Header({ isLoggedIn, userName, onLogout }: HeaderProps) 
               className="block text-gray-600 hover:text-indigo-600"
             >
               Question Bank
+            </Link>
+            <Link
+              to="/about"
+              className="block text-gray-600 hover:text-indigo-600"
+            >
+              About Us
             </Link>
             
             {isLoggedIn ? (
