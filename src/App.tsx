@@ -6,17 +6,17 @@ import QuestionBank from './pages/QuestionBank';
 import QuestionList from './pages/QuestionList';
 import QuestionDetail from './pages/QuestionDetail';
 import HomePage from './components/HomePage';
-import AuthPage from './components/AuthPage';
+import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
+import AboutUs from './components/AboutUs';
 import Profile from './pages/Profile';
 import UserResponses from './pages/UserResponses';
-import AboutUs from './components/AboutUs';
 import { checkLoginStatus, getUserDetails } from './utils/api';
-import { LOGOUTURL} from './utils/comstants';
+import { LOGOUT_URL } from './utils/comstants';
 
 interface UserData {
   name: string;
-  email?: string;
+  emailId?: string;
 }
 
 export default function App() {
@@ -62,7 +62,7 @@ export default function App() {
   }, []);
 
   const handleLogout = () => {
-    window.location.href = LOGOUTURL;
+    window.location.href = LOGOUT_URL;
   };
 
   if (isLoading) {
@@ -94,7 +94,7 @@ export default function App() {
             <Route path="/question-bank" element={<QuestionBank />} />
             <Route path="/questions" element={<QuestionList />} />
             <Route path="/questions/:id" element={<QuestionDetail />} />
-            <Route path="/login" element={<AuthPage />} />
+            <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/about" element={<AboutUs />} />
             <Route 
