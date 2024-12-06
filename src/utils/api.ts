@@ -6,10 +6,28 @@ import { UserResponses } from '../types/response';
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: API_TIMEOUT,
+  // In development, we'll use the proxy configured in Vite
+  // In production, we'll use the full URL
+  baseURL:  'https://aspirantsclub-production.up.railway.app',
   withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  }
 });
+
+// Add response interceptor for error handling
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      window.location.href = '/login';
+    }
+    console.error('API Error:', error.response?.data || error.message);
+    return Promise.reject(error);
+  }
+);
+
 
 // Auth
 export const checkLoginStatus = () => api.get('/public/isLogin');
