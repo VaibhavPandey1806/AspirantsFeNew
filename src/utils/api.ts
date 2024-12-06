@@ -6,15 +6,25 @@ import { UserResponses } from '../types/response';
 import { API_BASE_URL, API_TIMEOUT } from '../config/api';
 
 const api = axios.create({
-  // In development, we'll use the proxy configured in Vite
-  // In production, we'll use the full URL
-  baseURL:  'https://aspirantsclub-production.up.railway.app',
+  baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   }
 });
+
+// Add request interceptor to handle CORS preflight
+api.interceptors.request.use(
+  config => {
+    // Ensure headers are properly set for CORS
+    config.headers['Access-Control-Allow-Origin'] = '*';
+    config.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
+    config.headers['Access-Control-Allow-Headers'] = 'Origin, Content-Type, Accept';
+    return config;
+  },
+  error => Promise.reject(error)
+);
 
 // Add response interceptor for error handling
 api.interceptors.response.use(
@@ -27,8 +37,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-
 // Auth
 export const checkLoginStatus = () => api.get('/public/isLogin');
 export const getUserDetails = () => api.get('/api/userDetails');
