@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../utils/api';
-import { LOGIN_URL } from '../utils/comstants';
+import { LOGINURL } from '../utils/comstants';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -23,7 +23,7 @@ export default function RegisterPage() {
     try {
       await registerUser(formData);
       // After successful registration, redirect to login
-      window.location.href = LOGIN_URL;
+      window.location.href = LOGINURL;
     } catch (error: any) {
       setError(error.response?.data || 'Registration failed. Please try again.');
     } finally {
@@ -134,7 +134,7 @@ export default function RegisterPage() {
 
           <div className="mt-6">
             <button
-              onClick={() => window.location.href = LOGIN_URL}
+              onClick={() => window.location.href = LOGINURL}
               className="w-full text-center text-sm text-indigo-600 hover:text-indigo-500"
             >
               Already have an account? Sign in

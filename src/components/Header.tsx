@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Menu, X, ChevronDown, LogOut, User as UserIcon, ClipboardList } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { LOGOUT_URL } from '../utils/comstants';
+import { LOGOUTURL } from '../utils/comstants';
 
 interface HeaderProps {
   isLoggedIn: boolean;

@@ -7,36 +7,10 @@ import { API_BASE_URL, API_TIMEOUT } from '../config/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
+  timeout: API_TIMEOUT,
   withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
 });
 
-// Add request interceptor to handle CORS preflight
-api.interceptors.request.use(
-  config => {
-    // Ensure headers are properly set for CORS
-    config.headers['Access-Control-Allow-Origin'] = '*';
-    config.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS';
-    config.headers['Access-Control-Allow-Headers'] = 'Origin, Content-Type, Accept';
-    return config;
-  },
-  error => Promise.reject(error)
-);
-
-// Add response interceptor for error handling
-api.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 401) {
-      window.location.href = '/login';
-    }
-    console.error('API Error:', error.response?.data || error.message);
-    return Promise.reject(error);
-  }
-);
 // Auth
 export const checkLoginStatus = () => api.get('/public/isLogin');
 export const getUserDetails = () => api.get('/api/userDetails');
