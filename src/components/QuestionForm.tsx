@@ -1,94 +1,94 @@
-import React, { useState, useEffect } from 'react';
-import { Plus } from 'lucide-react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  getCategories, 
-  getSources, 
-  getTopics, 
-  submitQuestion, 
-  checkLoginStatus 
-} from '../utils/api';
-import { Category, Topic, Source } from '../types/question';
+import { submitQuestion, checkLoginStatus } from '../utils/api';
+import SelectWithAdd from './Select/SelectWithAdd';
+import { useQuestionForm } from '../hooks/useQuestionForm';
 
 export default function QuestionForm() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    question: '',
-    optionA: '',
-    optionB: '',
-    optionC: '',
-    optionD: '',
-    topic: '',
-    source: '',
-    category: '',
-    correctAnswer: ''
-  });
-
-  const [topics, setTopics] = useState<Topic[]>([]);
-  const [sources, setSources] = useState<Source[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [newTopic, setNewTopic] = useState('');
-  const [newSource, setNewSource] = useState('');
-  const [newCategory, setNewCategory] = useState('');
-  const [showNewTopic, setShowNewTopic] = useState(false);
-  const [showNewSource, setShowNewSource] = useState(false);
-  const [showNewCategory, setShowNewCategory] = useState(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const { data: isLoggedIn } = await checkLoginStatus();
-        
-        if (!isLoggedIn) {
-          navigate('/login');
-          return;
-        }
-
-        const [categoriesRes, sourcesRes, topicsRes] = await Promise.all([
-          getCategories(),
-          getSources(),
-          getTopics()
-        ]);
-
-        setCategories(categoriesRes.data);
-        setSources(sourcesRes.data);
-        setTopics(topicsRes.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, [navigate]);
+  const {
+    formData,
+    categories,
+    topics,
+    sources,
+    selectedCategory,
+    selectedTopic,
+    selectedSource,
+    newCategory,
+    newTopic,
+    newSource,
+    isSubmitting,
+    error,
+    handleInputChange,
+    handleCategorySelect,
+    handleTopicSelect,
+    handleSourceSelect,
+    handleAddNewCategory,
+    handleAddNewTopic,
+    handleAddNewSource,
+    setIsSubmitting,
+    setError,
+    resetForm
+  } = useQuestionForm();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    // Validate that either a selection or new item is provided
+    if (!selectedCategory?.id && !newCategory) {
+      setError('Please select or add a category');
+      return;
+    }
+    if (!selectedTopic?.id && !newTopic) {
+      setError('Please select or add a topic');
+      return;
+    }
+    if (!selectedSource?.id && !newSource) {
+      setError('Please select or add a source');
+      return;
+    }
+
     try {
-      await submitQuestion(formData);
-      setFormData({
-        question: '',
-        optionA: '',
-        optionB: '',
-        optionC: '',
-        optionD: '',
-        topic: '',
-        source: '',
-        category: '',
-        correctAnswer: ''
-      });
+      setIsSubmitting(true);
+      setError(null);
+
+      const { data: isLoggedIn } = await checkLoginStatus();
+      if (!isLoggedIn) {
+        navigate('/login');
+        return;
+      }
+
+      const submissionData = {
+        ...formData,
+        section: selectedCategory?.name || newCategory,
+        sectionId: selectedCategory?.id,
+        topic: selectedTopic?.name || newTopic,
+        topicId: selectedTopic?.id,
+        source: selectedSource?.name || newSource,
+        sourceId: selectedSource?.id
+      };
+
+      await submitQuestion(submissionData);
+      resetForm();
+      alert('Question submitted successfully!');
     } catch (error) {
       console.error('Error submitting question:', error);
+      setError('Failed to submit question. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Submit a Question</h1>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg">
+          {error}
+        </div>
+      )}
       
       <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-sm">
         {/* Question Text */}
@@ -97,8 +97,8 @@ export default function QuestionForm() {
             Question
           </label>
           <textarea
-            name="question"
-            value={formData.question}
+            name="questionText"
+            value={formData.questionText}
             onChange={handleInputChange}
             rows={4}
             className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -116,7 +116,7 @@ export default function QuestionForm() {
               <input
                 type="text"
                 name={`option${option}`}
-                value={formData[`option${option}` as keyof typeof formData]}
+                value={formData[`option${option}` as keyof typeof formData] || ''}
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                 required
@@ -126,94 +126,40 @@ export default function QuestionForm() {
         </div>
 
         {/* Category */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Category
-          </label>
-          <div className="flex gap-2">
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleInputChange}
-              className="flex-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            >
-              <option value="">Select Category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={() => setShowNewCategory(true)}
-              className="p-2 text-indigo-600 hover:text-indigo-700"
-            >
-              <Plus size={24} />
-            </button>
-          </div>
-        </div>
+        <SelectWithAdd
+          label="Category"
+          value={selectedCategory?.id || ''}
+          options={categories}
+          onChange={handleCategorySelect}
+          onAddNew={handleAddNewCategory}
+          placeholder="Select or add new category"
+          required
+          selectedName={newCategory}
+        />
 
         {/* Topic */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Topic
-          </label>
-          <div className="flex gap-2">
-            <select
-              name="topic"
-              value={formData.topic}
-              onChange={handleInputChange}
-              className="flex-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            >
-              <option value="">Select Topic</option>
-              {topics.map((topic) => (
-                <option key={topic.id} value={topic.id}>
-                  {topic.name}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={() => setShowNewTopic(true)}
-              className="p-2 text-indigo-600 hover:text-indigo-700"
-            >
-              <Plus size={24} />
-            </button>
-          </div>
-        </div>
+        <SelectWithAdd
+          label="Topic"
+          value={selectedTopic?.id || ''}
+          options={topics}
+          onChange={handleTopicSelect}
+          onAddNew={handleAddNewTopic}
+          placeholder="Select or add new topic"
+          required
+          selectedName={newTopic}
+        />
 
         {/* Source */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Source
-          </label>
-          <div className="flex gap-2">
-            <select
-              name="source"
-              value={formData.source}
-              onChange={handleInputChange}
-              className="flex-1 p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              required
-            >
-              <option value="">Select Source</option>
-              {sources.map((source) => (
-                <option key={source.id} value={source.id}>
-                  {source.name}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={() => setShowNewSource(true)}
-              className="p-2 text-indigo-600 hover:text-indigo-700"
-            >
-              <Plus size={24} />
-            </button>
-          </div>
-        </div>
+        <SelectWithAdd
+          label="Source"
+          value={selectedSource?.id || ''}
+          options={sources}
+          onChange={handleSourceSelect}
+          onAddNew={handleAddNewSource}
+          placeholder="Select or add new source"
+          required
+          selectedName={newSource}
+        />
 
         {/* Correct Answer */}
         <div>
@@ -240,9 +186,10 @@ export default function QuestionForm() {
 
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          disabled={isSubmitting}
+          className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Submit Question
+          {isSubmitting ? 'Submitting...' : 'Submit Question'}
         </button>
       </form>
     </div>

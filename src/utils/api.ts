@@ -56,21 +56,36 @@ export const getQuestionsByFilters = (params: {
   
   return api.get<Question[]>(`/api/getQuestionsByFilters?${queryParams.toString()}`);
 };
-
-export const getQuestionById = (id: string) => 
-  api.get<Question>(`/api/getQuestionsbyId?id=${id}`);
-
-export const submitQuestion = (questionData: {
-  question: string;
+export interface QuestionSubmission {
+  questionText: string;
   optionA: string;
   optionB: string;
   optionC: string;
   optionD: string;
-  topic: string;
-  source: string;
-  category: string;
   correctAnswer: string;
-}) => api.post<Question>('/api/questions', questionData);
+  section?: string;
+  sectionId?: string;
+  topic?: string;
+  topicId?: string;
+  source?: string;
+  sourceId?: string;
+}
+
+export const submitQuestion = (data: QuestionSubmission) => {
+  const params = new URLSearchParams();
+  
+  // Add all parameters to query string
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined) {
+      params.append(key, value.toString());
+    }
+  });
+  
+  return api.get(`/api/addQuestion?${params.toString()}`);
+};
+export const getQuestionById = (id: string) => 
+  api.get(`/api/getQuestionsbyId?id=${id}`);
+
 
 // Responses
 export const submitResponse = (params: {
