@@ -1,13 +1,13 @@
 import { useState, useCallback } from 'react';
-import { Comment } from '../types/comment';
 import { 
-  getCommentById, 
+  getCommentById,
   getUserById,
-  likeComment, 
-  unlikeComment, 
-  dislikeComment, 
-  addReply 
-} from '../utils/api';
+  likeComment,
+  unlikeComment,
+  dislikeComment,
+  addReply
+} from '../api';
+import type { Comment } from '../types/comment';
 
 export function useComments(onCommentAdded: () => void) {
   const [isReplying, setIsReplying] = useState<string | null>(null);

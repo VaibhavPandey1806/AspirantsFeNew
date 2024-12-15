@@ -19,6 +19,12 @@ export default function MultiSelectFilter({
   onRemove,
   isDisabled = false
 }: MultiSelectFilterProps) {
+  const handleSelect = (id: string) => {
+    if (!isDisabled && !selectedIds.includes(id)) {
+      onSelect(id);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 h-[500px] flex flex-col">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
@@ -38,7 +44,8 @@ export default function MultiSelectFilter({
                 {option.name}
                 <button
                   onClick={() => onRemove(id)}
-                  className="hover:text-indigo-900"
+                  className="hover:text-indigo-900 focus:outline-none"
+                  type="button"
                 >
                   <X size={14} />
                 </button>
@@ -59,13 +66,14 @@ export default function MultiSelectFilter({
             {options.map((option) => (
               <button
                 key={option.id}
-                onClick={() => onSelect(option.id)}
+                onClick={() => handleSelect(option.id)}
                 disabled={isDisabled || selectedIds.includes(option.id)}
                 className={`w-full text-left px-4 py-2 rounded-md transition-colors duration-200 
                   ${selectedIds.includes(option.id)
                     ? 'bg-indigo-50 text-indigo-700 cursor-default'
                     : 'hover:bg-gray-50 text-gray-700'
                   } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                type="button"
               >
                 {option.name}
               </button>

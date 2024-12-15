@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { 
   getCategories, 
   getSources, 
-  getTopicsByCategory
-} from '../utils/api';
-import { Category, Topic, Source } from '../types/question';
+  getTopicsByCategory,
+  getQuestionsByFilters
+} from '../api';
+import type { Category, Topic, Source } from '../types/question';
 
 export function useQuestionBank() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -13,6 +14,8 @@ export function useQuestionBank() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [selectedSources, setSelectedSources] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch initial data (categories and sources)
   useEffect(() => {
@@ -27,6 +30,7 @@ export function useQuestionBank() {
         setSources(sourcesRes.data);
       } catch (error) {
         console.error('Error fetching initial data:', error);
+        setError('Failed to load initial data');
         setCategories([]);
         setSources([]);
       }
@@ -52,12 +56,36 @@ export function useQuestionBank() {
         setTopics(allTopics);
       } catch (error) {
         console.error('Error fetching topics:', error);
+        setError('Failed to load topics');
         setTopics([]);
       }
     };
 
     fetchTopics();
   }, [selectedCategories]);
+
+  const handleSearch = async () => {
+    if (selectedCategories.length === 0) {
+      setError('Please select at least one category');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      await getQuestionsByFilters({
+        category: selectedCategories,
+        topic: selectedTopics.length > 0 ? selectedTopics : undefined,
+        source: selectedSources.length > 0 ? selectedSources : undefined
+      });
+    } catch (error) {
+      console.error('Error fetching questions:', error);
+      setError('Failed to load questions');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     categories,
@@ -66,8 +94,11 @@ export function useQuestionBank() {
     selectedCategories,
     selectedTopics,
     selectedSources,
+    isLoading,
+    error,
     setSelectedCategories,
     setSelectedTopics,
-    setSelectedSources
+    setSelectedSources,
+    handleSearch
   };
 }

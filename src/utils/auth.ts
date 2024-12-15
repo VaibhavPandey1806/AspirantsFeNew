@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../config/api';
+import { API_BASE_URL } from './constants';
 import type { LoginCredentials, AuthResponse } from '../types/auth';
+import { checkLoginStatus } from './api';
 
 export const performLogin = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
@@ -9,7 +10,8 @@ export const performLogin = async (credentials: LoginCredentials): Promise<AuthR
     formData.append('username', credentials.username);
     formData.append('password', credentials.password);
 
-    const response = await axios.post(
+    // Perform login
+    await axios.post(
       `${API_BASE_URL}/perform-login`,
       formData.toString(),
       {
@@ -21,13 +23,22 @@ export const performLogin = async (credentials: LoginCredentials): Promise<AuthR
       }
     );
 
+    // Check login status
+    const { data: isLoggedIn } = await checkLoginStatus();
+    
+    if (!isLoggedIn) {
+      throw new Error('Invalid credentials');
+    }
+
     return {
       success: true
     };
   } catch (error: any) {
     return {
       success: false,
-      message: error.response?.data?.message || 'Login failed. Please check your credentials.'
+      message: error.response?.status === 401 
+        ? 'Invalid username or password'
+        : error.response?.data?.message || 'Login failed. Please try again.'
     };
   }
 };

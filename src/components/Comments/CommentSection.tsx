@@ -45,7 +45,7 @@ function CommentThread({
           <ReplyForm
             commentId={comment.id}
             onSubmit={(text) => onReplySubmit(comment.id, text)}
-            onCancel={() => onReply("")}
+            onCancel={() => onReply(null)}
           />
         </div>
       )}

@@ -1,68 +1,56 @@
-import { useState, useEffect } from 'react';
-import { LoginCredentials } from '../types/auth';
-import { checkLoginStatus } from '../utils/api';
-import { performLogin } from '../utils/auth';
-import { ROUTES } from '../config/metadata';
+import { useState, useEffect, useCallback } from 'react';
+import { checkLoginStatus, getUserDetails } from '../api';
+
+interface UserData {
+  name: string;
+  email?: string;
+}
 
 export function useAuth() {
-  const [credentials, setCredentials] = useState<LoginCredentials>({
-    username: '',
-    password: ''
-  });
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data: isLoggedIn } = await checkLoginStatus();
-        if (isLoggedIn) {
-          window.location.href = ROUTES.HOME;
-        }
-      } catch (error) {
-        console.error('Error checking auth status:', error);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
-
+  const fetchLoginStatus = useCallback(async () => {
     try {
-      const response = await performLogin(credentials);
+      const { data: loginStatus } = await checkLoginStatus();
+      setIsLoggedIn(loginStatus);
       
-      if (response.success) {
-        const { data: isLoggedIn } = await checkLoginStatus();
-        
-        if (isLoggedIn) {
-          window.location.href = ROUTES.HOME;
-        } else {
-          setError('Login verification failed. Please try again.');
-        }
-      } else {
-        setError(response.message || 'Login failed. Please try again.');
+      if (loginStatus) {
+        const { data: userDetails } = await getUserDetails();
+        setUserData(userDetails);
       }
     } catch (error) {
-      setError('An unexpected error occurred. Please try again.');
+      console.error('Error checking login status:', error);
+      setIsLoggedIn(false);
+      setUserData(null);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setCredentials(prev => ({ ...prev, [name]: value }));
-  };
+  useEffect(() => {
+    let isMounted = true;
+
+    const init = async () => {
+      if (isMounted) {
+        await fetchLoginStatus();
+      }
+    };
+
+    init();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [fetchLoginStatus]);
 
   return {
-    credentials,
-    error,
+    isLoggedIn,
+    userData,
     isLoading,
-    handleSubmit,
-    handleInputChange
+    setIsLoggedIn,
+    setUserData,
+    refreshLoginStatus: fetchLoginStatus
   };
 }

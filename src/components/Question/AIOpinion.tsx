@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Bot, Loader2 } from 'lucide-react';
-import { getAIOpinion } from '../../utils/api';
+import { getAIOpinion } from '../../api';
 
 interface AIOpinionProps {
   questionId: string;
