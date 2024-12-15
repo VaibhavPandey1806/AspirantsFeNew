@@ -1,7 +1,7 @@
 // Auth URLs
 
-const LOGIN_URL='https://aspirantsclub-production.up.railway.app/login'
-const LOGOUT_URL='https://aspirantsclub-production.up.railway.app/logout'
+export const LOGIN_URL='https://aspirantsclub-production.up.railway.app/login'
+export const LOGOUT_URL='https://aspirantsclub-production.up.railway.app/logout'
 
 // export const LOGIN_URL = 'http://localhost:8086/login';
 // export const LOGOUT_URL = 'http://localhost:8086/logout';
