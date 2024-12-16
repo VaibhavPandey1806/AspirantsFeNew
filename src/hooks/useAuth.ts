@@ -1,56 +1,76 @@
 import { useState, useEffect, useCallback } from 'react';
-import { checkLoginStatus, getUserDetails } from '../api';
-
-interface UserData {
-  name: string;
-  email?: string;
-}
+import { useNavigate } from 'react-router-dom';
+import { performLogin, checkLoginStatus, getUserDetails } from '../api/auth';
+import type { LoginCredentials } from '../types/auth';
 
 export function useAuth() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [credentials, setCredentials] = useState<LoginCredentials>({
+    username: '',
+    password: ''
+  });
 
-  const fetchLoginStatus = useCallback(async () => {
+  const checkAuth = useCallback(async () => {
     try {
-      const { data: loginStatus } = await checkLoginStatus();
-      setIsLoggedIn(loginStatus);
+      const isAuthenticated = await checkLoginStatus();
+      setIsLoggedIn(isAuthenticated);
       
-      if (loginStatus) {
-        const { data: userDetails } = await getUserDetails();
+      if (isAuthenticated) {
+        const userDetails = await getUserDetails();
         setUserData(userDetails);
       }
     } catch (error) {
-      console.error('Error checking login status:', error);
+      console.error('Auth check error:', error);
       setIsLoggedIn(false);
       setUserData(null);
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
+    checkAuth();
+  }, [checkAuth]);
 
-    const init = async () => {
-      if (isMounted) {
-        await fetchLoginStatus();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isLoading) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await performLogin(credentials);
+      
+      if (response.success) {
+        // Redirect will be handled by Spring Security
+        window.location.href = '/';
+      } else {
+        setError(response.message);
       }
-    };
+    } catch (error: any) {
+      setError('An unexpected error occurred');
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    init();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [fetchLoginStatus]);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCredentials(prev => ({ ...prev, [name]: value }));
+  };
 
   return {
     isLoggedIn,
     userData,
     isLoading,
-    setIsLoggedIn,
-    setUserData,
-    refreshLoginStatus: fetchLoginStatus
+    error,
+    credentials,
+    handleSubmit,
+    handleInputChange,
+    checkAuth
   };
 }

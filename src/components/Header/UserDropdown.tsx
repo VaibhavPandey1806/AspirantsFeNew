@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { User, LogOut, ChevronDown, ClipboardList } from 'lucide-react';
+import { User, LogOut, ChevronDown, ClipboardList, Settings } from 'lucide-react';
 
 interface UserDropdownProps {
-  userName?: string;
+  userName: string;
+  isAdmin?: boolean;
   onLogout: () => void;
 }
 
-export default function UserDropdown({ userName, onLogout }: UserDropdownProps) {
+export default function UserDropdown({ userName, isAdmin, onLogout }: UserDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +52,28 @@ export default function UserDropdown({ userName, onLogout }: UserDropdownProps) 
             <ClipboardList size={16} className="mr-2" />
             My Responses
           </Link>
+
+          <Link
+            to="/submitted-questions"
+            className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50"
+            onClick={() => setIsOpen(false)}
+          >
+            <ClipboardList size={16} className="mr-2" />
+            Submitted Questions
+          </Link>
+          
+          
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50"
+              onClick={() => setIsOpen(false)}
+            >
+              <Settings size={16} className="mr-2" />
+              Admin Dashboard
+            </Link>
+          )}
+
           <button
             onClick={() => {
               setIsOpen(false);

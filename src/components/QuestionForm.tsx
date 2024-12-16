@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { submitQuestion, checkLoginStatus } from '../utils/api';
 import SelectWithAdd from './Select/SelectWithAdd';
 import { useQuestionForm } from '../hooks/useQuestionForm';
-import type { QuestionSubmission } from '../types/api';
 
 export default function QuestionForm() {
   const navigate = useNavigate();
@@ -60,7 +59,7 @@ export default function QuestionForm() {
         return;
       }
 
-      const submissionData: QuestionSubmission = {
+      const submissionData = {
         ...formData,
         section: selectedCategory?.name || newCategory,
         sectionId: selectedCategory?.id,

@@ -10,13 +10,16 @@ import RegisterPage from '../components/RegisterPage';
 import Profile from '../pages/Profile';
 import UserResponses from '../pages/UserResponses';
 import AboutUs from '../components/AboutUs';
+import AdminDashboard from '../pages/admin/AdminDashboard';
 import PrivateRoute from './PrivateRoute';
+import AdminRoute from './AdminRoutes';
 
 interface AppRoutesProps {
   isLoggedIn: boolean;
+  userRole?: string;
 }
 
-export default function AppRoutes({ isLoggedIn }: AppRoutesProps) {
+export default function AppRoutes({ isLoggedIn, userRole }: AppRoutesProps) {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
@@ -40,6 +43,11 @@ export default function AppRoutes({ isLoggedIn }: AppRoutesProps) {
         <PrivateRoute isLoggedIn={isLoggedIn}>
           <UserResponses />
         </PrivateRoute>
+      } />
+      <Route path="/admin" element={
+        <AdminRoute isLoggedIn={isLoggedIn} isAdmin={userRole === 'admin'}>
+          <AdminDashboard />
+        </AdminRoute>
       } />
     </Routes>
   );

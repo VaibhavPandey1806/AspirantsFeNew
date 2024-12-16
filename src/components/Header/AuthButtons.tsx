@@ -1,5 +1,4 @@
 import React from 'react';
-import { User, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import UserDropdown from './UserDropdown';
 import { LOGIN_URL } from '../../utils/constants';
@@ -7,11 +6,18 @@ import { LOGIN_URL } from '../../utils/constants';
 interface AuthButtonsProps {
   isLoggedIn: boolean;
   userName?: string;
+  isAdmin?: boolean;
   onLogout: () => void;
   className?: string;
 }
 
-export default function AuthButtons({ isLoggedIn, userName, onLogout, className = '' }: AuthButtonsProps) {
+export default function AuthButtons({ 
+  isLoggedIn, 
+  userName, 
+  isAdmin,
+  onLogout, 
+  className = '' 
+}: AuthButtonsProps) {
   const handleLogin = () => {
     window.location.href = LOGIN_URL;
   };
@@ -19,7 +25,11 @@ export default function AuthButtons({ isLoggedIn, userName, onLogout, className 
   return (
     <div className={`items-center gap-4 ${className}`}>
       {isLoggedIn ? (
-        <UserDropdown userName={userName} onLogout={onLogout} />
+        <UserDropdown 
+          userName={userName || ''} 
+          isAdmin={isAdmin}
+          onLogout={onLogout} 
+        />
       ) : (
         <button
           onClick={handleLogin}

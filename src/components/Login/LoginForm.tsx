@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertCircle } from 'lucide-react';
-import { LoginCredentials } from '../../types/auth';
+import type { LoginCredentials } from '../../types/auth';
 
 interface LoginFormProps {
   credentials: LoginCredentials;
